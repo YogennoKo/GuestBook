@@ -1,6 +1,5 @@
 package guestbook;
 
-
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -22,6 +21,14 @@ public class GuestbookResource {
         entry.persist();
         return entry;
     }
+
+    @DELETE
+    @Path("/{id}")
+    @Transactional
+    public void deleteEntry(@PathParam("id") Long id) {
+        GuestEntry entry = GuestEntry.findById(id);
+        if (entry != null) {
+            entry.delete();
+        }
+    }
 }
-
-

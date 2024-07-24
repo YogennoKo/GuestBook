@@ -10,6 +10,8 @@
       <li v-for="entry in entries" :key="entry.id" class="guestbook-entry">
         <div class="guestbook-entry-header">
           <strong>{{ entry.nickname }}</strong>
+          <span class="guestbook-entry-time">{{ formatTime(entry.timestamp) }}</span>
+          <button @click="deleteEntry(entry.id)" class="guestbook-delete-button">Delete</button>
         </div>
         <p>{{ entry.message }}</p>
       </li>
@@ -43,13 +45,21 @@ export default {
     },
     async submitEntry() {
       try {
-        const newEntry = { nickname: this.nickname, message: this.message };
+        const newEntry = {nickname: this.nickname, message: this.message};
         await axios.post('http://localhost:8080/guestbook', newEntry);
         this.fetchEntries(); // Refresh the entries after submission
         this.nickname = '';
         this.message = '';
       } catch (error) {
         console.error('Error submitting entry:', error);
+      }
+    },
+    async deleteEntry(id) {
+      try {
+        await axios.delete(`http://localhost:8080/guestbook/${id}`);
+        this.fetchEntries(); // Refresh the entries after deletion
+      } catch (error) {
+        console.error('Error deleting entry:', error);
       }
     },
     formatTime(timestamp) {
@@ -114,5 +124,16 @@ export default {
 .guestbook-entry-time {
   font-size: 0.9em;
   color: #888;
+}
+
+.guestbook-delete-button {
+  background: none;
+  border: none;
+  color: red;
+  cursor: pointer;
+}
+
+.guestbook-delete-button:hover {
+  text-decoration: underline;
 }
 </style>
