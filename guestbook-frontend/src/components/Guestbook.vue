@@ -1,14 +1,17 @@
 <template>
-  <div>
+  <div class="guestbook-container">
     <h1>Guestbook</h1>
     <form @submit.prevent="submitEntry">
-      <input v-model="nickname" placeholder="Your nickname" required>
-      <textarea v-model="message" placeholder="Your message" required></textarea>
-      <button type="submit">Submit</button>
+      <input v-model="nickname" placeholder="Your nickname" required class="guestbook-input">
+      <textarea v-model="message" placeholder="Your message" required class="guestbook-textarea"></textarea>
+      <button type="submit" class="guestbook-button">Submit</button>
     </form>
-    <ul>
-      <li v-for="entry in entries" :key="entry.id">
-        <strong>{{ entry.nickname }}</strong>: {{ entry.message }}
+    <ul class="guestbook-entries">
+      <li v-for="entry in entries" :key="entry.id" class="guestbook-entry">
+        <div class="guestbook-entry-header">
+          <strong>{{ entry.nickname }}</strong>
+        </div>
+        <p>{{ entry.message }}</p>
       </li>
     </ul>
   </div>
@@ -42,13 +45,74 @@ export default {
       try {
         const newEntry = { nickname: this.nickname, message: this.message };
         await axios.post('http://localhost:8080/guestbook', newEntry);
-        this.entries.push(newEntry);
+        this.fetchEntries(); // Refresh the entries after submission
         this.nickname = '';
         this.message = '';
       } catch (error) {
         console.error('Error submitting entry:', error);
       }
+    },
+    formatTime(timestamp) {
+      const date = new Date(timestamp);
+      return date.toLocaleString();
     }
   }
 };
 </script>
+
+<style scoped>
+.guestbook-container {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.guestbook-input,
+.guestbook-textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.guestbook-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.guestbook-button:hover {
+  background-color: #0056b3;
+}
+
+.guestbook-entries {
+  list-style: none;
+  padding: 0;
+}
+
+.guestbook-entry {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.guestbook-entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.guestbook-entry-time {
+  font-size: 0.9em;
+  color: #888;
+}
+</style>
